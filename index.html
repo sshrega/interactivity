@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hackathon Activity Tracker</title>
+
+<style>
+
+/* Page Styling */
+
+body {
+font-family: Arial;
+background: linear-gradient(120deg,#1e3c72,#2a5298);
+color: white;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+}
+
+/* Main Container */
+
+.container {
+background: rgba(255,255,255,0.1);
+padding: 25px;
+border-radius: 12px;
+width: 400px;
+text-align: center;
+box-shadow: 0px 5px 20px rgba(0,0,0,0.3);
+}
+
+/* Heading */
+
+h1 {
+margin-bottom: 10px;
+}
+
+/* Progress Text */
+
+#progress {
+font-size: 18px;
+margin-bottom: 15px;
+}
+
+/* Activity List */
+
+ul {
+list-style: none;
+padding: 0;
+}
+
+li {
+background: rgba(255,255,255,0.2);
+margin: 10px 0;
+padding: 10px;
+border-radius: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* Completed Activity Style */
+
+.completed {
+text-decoration: line-through;
+color: lightgreen;
+}
+
+/* Buttons */
+
+button {
+padding: 8px 15px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+background: #00c6ff;
+color: white;
+font-weight: bold;
+}
+
+button:hover {
+background: #0072ff;
+}
+
+/* Reset Button */
+
+#resetBtn {
+margin-top: 15px;
+background: crimson;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🚀 Activity Tracker</h1>
+
+<p id="progress">0 out of 0 activities completed</p>
+
+<ul id="activityList"></ul>
+
+<button id="resetBtn">Reset Progress</button>
+
+</div>
+
+<script>
+
+/* Activity Data */
+
+const activities = [
+{ id: 1, name: "Design Homepage", completed: false },
+{ id: 2, name: "Create Navigation Bar", completed: false },
+{ id: 3, name: "Add Activity List UI", completed: false },
+{ id: 4, name: "Implement Checkbox Actions", completed: false },
+{ id: 5, name: "Create Progress Counter", completed: false },
+{ id: 6, name: "Apply Styling", completed: false },
+{ id: 7, name: "Final Testing", completed: false }
+];
+
+/* DOM References */
+
+const activityList = document.getElementById("activityList");
+const progressText = document.getElementById("progress");
+const resetBtn = document.getElementById("resetBtn");
+
+/* Load Local Storage Data */
+
+const savedData = localStorage.getItem("activities");
+
+if(savedData){
+
+const parsedData = JSON.parse(savedData);
+
+parsedData.forEach((item,index)=>{
+activities[index].completed = item.completed;
+});
+
+}
+
+/* Render Activities */
+
+function renderActivities(){
+
+activityList.innerHTML="";
+
+activities.forEach(activity=>{
+
+const li=document.createElement("li");
+
+const title=document.createElement("span");
+
+title.textContent=activity.name;
+
+if(activity.completed){
+
+title.classList.add("completed");
+
+}
+
+const checkbox=document.createElement("input");
+
+checkbox.type="checkbox";
+
+checkbox.checked=activity.completed;
+
+/* Checkbox Event */
+
+checkbox.addEventListener("change",()=>{
+
+activity.completed=checkbox.checked;
+
+saveProgress();
+
+updateProgress();
+
+renderActivities();
+
+});
+
+/* Append Elements */
+
+li.appendChild(title);
+
+li.appendChild(checkbox);
+
+activityList.appendChild(li);
+
+});
+
+}
+
+/* Update Progress Counter */
+
+function updateProgress(){
+
+const completedCount=activities.filter(
+activity=>activity.completed
+).length;
+
+progressText.textContent=
+`${completedCount} out of ${activities.length} activities completed`;
+
+/* Edge Case Handling */
+
+if(completedCount===activities.length){
+
+progressText.textContent+=" 🎉 All Completed!";
+
+}
+
+}
+
+/* Save Progress */
+
+function saveProgress(){
+
+localStorage.setItem(
+"activities",
+JSON.stringify(activities)
+);
+
+}
+
+/* Reset Progress */
+
+resetBtn.addEventListener("click",()=>{
+
+activities.forEach(activity=>{
+
+activity.completed=false;
+
+});
+
+saveProgress();
+
+renderActivities();
+
+updateProgress();
+
+});
+
+/* Initial Load */
+
+renderActivities();
+
+updateProgress();
+
+</script>
+
+</body>
+</html>
